@@ -25,7 +25,7 @@ scene.add(cube);
 // Camera position
 camera.position.z = 5;
 
-// Resize handling (IMPORTANT)
+// Resize handling
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
