@@ -43,7 +43,8 @@ export class Kelp {
 
   // Generation handler (L-system generation implementation)
   generateStructure() {
-    //
+    // call the generate function of KelpStructure
+    this.structure.generate();
   }
 
   // create mesh to for WebGL

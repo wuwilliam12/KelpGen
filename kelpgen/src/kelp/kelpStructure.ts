@@ -1,13 +1,16 @@
 import * as THREE from 'three';
 import { KelpSpecies, KelpSpeciesConfig, type KelpConfig } from "./kelpSpecies";
+import { Kelp } from './kelp';
+import { LSystem } from "./LSystem";
 
 export class KelpStructure {
-  
-
+  private lSystem: LSystem; // L-system instance for generating the structure
+  private kelp: Kelp; // Reference to the main Kelp class for accessing scene and other properties
 
   // Constructor for KelpStructure, which will hold the generated structure of the kelp
-  constructor() {
-
+  constructor(kelp: Kelp, config: KelpConfig) {
+    this.kelp = kelp;
+    this.lSystem = new LSystem(config);
   }
 
   // Generates the holdfast structure at the base of the kelp
@@ -17,11 +20,6 @@ export class KelpStructure {
 
   // Generates the stipe structure (main vertical stem)
   createStipe() {
-
-  }
-
-  // Generates the frond structures (leaf-like extensions)
-  createFronds() {
 
   }
 
@@ -43,10 +41,34 @@ export class KelpStructure {
 
   }
 
+  // Generates the frond structures (leaf-like extensions)
+  createFronds() {
+    this.createFrondStipe();
+    this.createFrondPneumatocysts();
+    this.createFrondBlades();
+  }
+
+  // Interprets the generated L-system string to create the 3D structure of the kelp
+  private interpretLSystemString() {
+    const stack: THREE.Object3D[] = [];
+    let currentObject: THREE.Object3D | null = null;
+
+    for (const char of this.lSystem.getGeneratedString()) {
+      switch (char) {
+        case 'F':
+          break;
+
+        
+      }
+    }
+  }
+
   // Generates the entire kelp structure by combining holdfast, stipe, and fronds
   generate() {
-    this.createHoldfast();
-    this.createStipe();
-    this.createFronds();
+    // Run L-system to generate string/symbol sequence
+    this.lSystem.generateString();
+
+    // Create the structures for symbols
+    this.interpretLSystemString();
   }
 }
