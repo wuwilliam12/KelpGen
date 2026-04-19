@@ -1,4 +1,9 @@
 import * as THREE from 'three';
+import { createGUI } from "./gui/gui";
+import { guiParams } from './gui/guiParams';
+
+// Initialize GUI
+createGUI();
 
 // Scene
 const scene = new THREE.Scene();
@@ -36,8 +41,8 @@ window.addEventListener('resize', () => {
 function animate() {
   requestAnimationFrame(animate);
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  cube.rotation.x += guiParams.stiffness * 0.01; // Example usage of GUI parameter
+  cube.rotation.y += guiParams.damping * 0.01; // Example usage of GUI parameter
 
   renderer.render(scene, camera);
 }

@@ -20,6 +20,7 @@ export interface KelpConfig {
 
 // Species-specific configurations
 export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
+  // TODO: PLACEHOLDER - adjust to needs later
   [KelpSpecies.GIANT]: {
     segmentCount: 20,
     stiffness: 0.8,
