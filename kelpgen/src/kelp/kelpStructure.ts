@@ -8,9 +8,9 @@ export class KelpStructure {
   private kelp: Kelp; // Reference to the main Kelp class for accessing scene and other properties
 
   // Constructor for KelpStructure, which will hold the generated structure of the kelp
-  constructor(kelp: Kelp, config: KelpConfig) {
+  constructor(kelp: Kelp) {
     this.kelp = kelp;
-    this.lSystem = new LSystem(config);
+    this.lSystem = new LSystem(this.kelp.getConfig());
   }
 
   // Generates the holdfast structure at the base of the kelp

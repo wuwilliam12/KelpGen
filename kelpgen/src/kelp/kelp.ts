@@ -14,8 +14,6 @@ export class Kelp {
   // Structure data
   private structure: KelpStructure; // holds the generated structure of the kelp
 
-  // Physics data
-
   // Three.js
   private geometry: THREE.BufferGeometry;
   private mesh: THREE.Mesh;
@@ -27,7 +25,7 @@ export class Kelp {
     this.config = KelpSpeciesConfig[this.species];
     this.height = options.height || 10;
 
-    this.structure = new KelpStructure();
+    this.structure = new KelpStructure(this);
 
     this.geometry = null as any; // placeholder, generated in createMesh
     this.mesh = null as any;     // placeholder, created in createMesh
@@ -71,5 +69,10 @@ export class Kelp {
   // update call for animation
   update() {
 
+  }
+
+  // Getter for kelp config
+  getConfig() {
+    return this.config;
   }
 }
