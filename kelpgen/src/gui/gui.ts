@@ -1,18 +1,17 @@
 import GUI from "lil-gui";
 import { guiParams } from "./guiParams";
 
-// TODO: Using lil-gui for now, switch when have time later
 export function createGUI() {
   const gui = new GUI();
 
-  // Species selection
-  const speciesFolder = gui.addFolder("Species");
-  speciesFolder.add(guiParams, "species", ["giant", "standard", "small"]);
+  // Species selection (disabled for now since only have one species partially implemented)
+  const demoFolder = gui.addFolder("Demo");
+  demoFolder.add(guiParams, "species").name("species").disable();
 
   // Generation parameters
   const generationFolder = gui.addFolder("Generation");
   generationFolder.add(guiParams, "segments", 5, 50, 1);
-  generationFolder.add(guiParams, "branchChance", 0, 1, 0.1);
+  generationFolder.add(guiParams, "waveStrength", 0, 2, 0.1).name("ambient sway");
 
   // Physics parameters
   const physicsFolder = gui.addFolder("Physics");

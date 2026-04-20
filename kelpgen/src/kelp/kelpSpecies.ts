@@ -77,6 +77,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     buoyancy: 1.0,
 
     // Multibranch L-system generation
+    // TODO: EDIT, placeholder for demo
     axiom: "F",
     rules: {
       "F": "F[+F]F[-F]F"

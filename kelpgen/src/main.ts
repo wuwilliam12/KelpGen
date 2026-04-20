@@ -1,48 +1,75 @@
-import * as THREE from 'three';
+import "./style.css";
+import * as THREE from "three";
 import { createGUI } from "./gui/gui";
-import { guiParams } from './gui/guiParams';
+import { guiParams } from "./gui/guiParams";
+import { Kelp } from "./kelp/kelp";
+import { KelpSpecies } from "./kelp/kelpSpecies";
 
 // Initialize GUI
 createGUI();
 
-// Scene
+// Scene + Camera Setup
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x03141e);
+scene.fog = new THREE.Fog(0x03141e, 14, 42);
 
-// Camera
 const camera = new THREE.PerspectiveCamera(
-  75,
+  55,
   window.innerWidth / window.innerHeight,
   0.1,
-  1000
+  100,
 );
+camera.position.set(4.8, 6.5, 12);
+camera.lookAt(0, 6, 0);
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Object (placeholder)
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial({ color: 0x2e8b57 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+// Lighting
+const ambientLight = new THREE.HemisphereLight(0x8bd3ff, 0x03141e, 1.5);
+scene.add(ambientLight);
 
-// Camera position
-camera.position.z = 5;
+const directionalLight = new THREE.DirectionalLight(0xb9efff, 1.8);
+directionalLight.position.set(6, 10, 8);
+scene.add(directionalLight);
 
-// Resize handling
-window.addEventListener('resize', () => {
+const fillLight = new THREE.DirectionalLight(0x7bcf8d, 0.7);
+fillLight.position.set(-5, 4, -3);
+scene.add(fillLight);
+
+// Seafloor
+const seafloor = new THREE.Mesh(
+  new THREE.CircleGeometry(14, 48),
+  new THREE.MeshStandardMaterial({
+    color: 0x102c24,
+    roughness: 1,
+    metalness: 0,
+  }),
+);
+seafloor.rotation.x = -Math.PI / 2;
+seafloor.position.y = -1.55;
+scene.add(seafloor);
+
+// PLACEHOLDER: Kelp Initialization for DEMO
+const kelp = new Kelp(scene, {
+  species: KelpSpecies.GIANT,
+  height: 12,
+});
+kelp.init();
+
+window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Animation loop (placeholder)
 function animate() {
   requestAnimationFrame(animate);
 
-  cube.rotation.x += guiParams.stiffness * 0.01; // Example usage of GUI parameter
-  cube.rotation.y += guiParams.damping * 0.01; // Example usage of GUI parameter
+  kelp.update();
 
   renderer.render(scene, camera);
 }

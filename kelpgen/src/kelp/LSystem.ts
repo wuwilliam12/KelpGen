@@ -2,7 +2,7 @@ import { type KelpConfig } from "./kelpSpecies";
 
 export class LSystem {
   private axiom: string;
-  private rules: Record<string, string>
+  private rules: Record<string, string>;
   private iterations: number;
 
   private generatedString: string = "";
@@ -14,11 +14,21 @@ export class LSystem {
     this.iterations = config.iterations;
   }
 
-  // Generate string
+  // Generate string from config parameters
   generateString() {
-    // TODO: implement l-system generation
-    this.generatedString = this.axiom;
-    
+    let current = this.axiom;
+
+    for (let i = 0; i < this.iterations; i += 1) {
+      let next = "";
+
+      for (const char of current) {
+        next += this.rules[char] ?? char;
+      }
+
+      current = next;
+    }
+
+    this.generatedString = current;
   }
 
   // Accessor for the generated string
