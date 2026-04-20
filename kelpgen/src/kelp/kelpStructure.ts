@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Kelp } from "./kelp";
 import { LSystem } from "./LSystem";
 
-/// Interface for individual stipe segments
+// Interface for individual stipe segments
 export interface KelpSegment {
   start: THREE.Vector3;
   end: THREE.Vector3;
@@ -13,14 +13,18 @@ export interface KelpSegment {
 export interface KelpFrond {
   origin: THREE.Vector3;
   direction: THREE.Vector3;
+
   stipeLength: number;
   stipeRadius: number;
+
   bladeLength: number;
   bladeWidth: number;
+
   bulbRadius: number;
 }
 
 // For tracking turtle state in L-system interpretation
+// Turtle = current frame of ref
 type TurtleState = {
   position: THREE.Vector3;
   direction: THREE.Vector3;
