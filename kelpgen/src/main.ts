@@ -5,6 +5,10 @@ import { guiParams } from "./gui/guiParams";
 import { Kelp } from "./kelp/kelp";
 import { KelpSpecies } from "./kelp/kelpSpecies";
 
+// temp, delete later
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
+
 // Initialize GUI
 createGUI();
 
@@ -27,6 +31,14 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+// PLACEHOLDER: Camera controls for now for demo
+const controls = new FirstPersonControls(camera, renderer.domElement);
+
+controls.movementSpeed = 5;
+controls.lookSpeed = 0.1;
+
+controls.lookVertical = true;
 
 // Lighting
 const ambientLight = new THREE.HemisphereLight(0x8bd3ff, 0x03141e, 1.5);
@@ -66,8 +78,14 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+//temp for demo
+const clock = new THREE.Clock();
+
 function animate() {
   requestAnimationFrame(animate);
+
+  const delta = clock.getDelta();
+  controls.update(delta);
 
   kelp.update();
 
