@@ -86,27 +86,27 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
 
     // Deep green, thin blades, translucent, small specular highlights
     bladeMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      color: new THREE.Color(0x1B5E20),
+      subsurfaceStrength: 0.6,
+      translucency: 0.9,
+      roughness: 0.2,
+      specular: 0.3,
+      thickness: 0.05
     },
     stipeMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      color: new THREE.Color(0x0D3B1C),
+      subsurfaceStrength: 0.3,
+      translucency: 0.6,
+      roughness: 0.4,
+      specular: 0.2,
+      thickness: 0.15
     },
     bulbMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
+      color: new THREE.Color(0x1B5E20),
+      subsurfaceStrength: 0.4,
+      translucency: 0.7,
       roughness: 0.3,
-      specular: 0.5,
+      specular: 0.2,
       thickness: 0.1
     }
 
@@ -124,30 +124,30 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     },
     iterations: 3,
 
-    // Olive/brown, smooth rubbery, glossy blub, translucent blades
+    // Olive/brown, smooth rubbery, glossy bulb, translucent blades
     bladeMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      color: new THREE.Color(0x6B5D4F),
+      subsurfaceStrength: 0.4,
+      translucency: 0.85,
+      roughness: 0.25,
+      specular: 0.3,
+      thickness: 0.08
     },
     stipeMaterial: {
-      color: new THREE.Color(0x8B4513),
+      color: new THREE.Color(0x5A4A3A),
       subsurfaceStrength: 0.2,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      translucency: 0.5,
+      roughness: 0.35,
+      specular: 0.2,
+      thickness: 0.2
     },
     bulbMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      color: new THREE.Color(0x4A4030),
+      subsurfaceStrength: 0.3,
+      translucency: 0.4,
+      roughness: 0.15,
+      specular: 0.6,
+      thickness: 0.15
     }
   },
   [KelpSpecies.GOLDEN]: {
@@ -166,28 +166,28 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
 
     // Golden/yellow, waxy, glossy blades with strong subsurface scattering
     bladeMaterial: {
-      color: new THREE.Color(0xFFD700),
+      color: new THREE.Color(0xDAA520),
       subsurfaceStrength: 0.8,
+      translucency: 0.7,
+      roughness: 0.15,
+      specular: 0.6,
+      thickness: 0.12
+    },
+    stipeMaterial: {
+      color: new THREE.Color(0xB8860B),
+      subsurfaceStrength: 0.5,
       translucency: 0.6,
       roughness: 0.2,
       specular: 0.5,
       thickness: 0.2
     },
-    stipeMaterial: {
-      color: new THREE.Color(0x8B4513),
-      subsurfaceStrength: 0.2,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
-    },
     bulbMaterial: {
-      color: new THREE.Color(0x228B22),
-      subsurfaceStrength: 0.5,
-      translucency: 0.8,
-      roughness: 0.3,
-      specular: 0.5,
-      thickness: 0.1
+      color: new THREE.Color(0xCD853F),
+      subsurfaceStrength: 0.6,
+      translucency: 0.5,
+      roughness: 0.12,
+      specular: 0.7,
+      thickness: 0.15
     }
   },
 };

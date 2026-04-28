@@ -5,8 +5,6 @@ import { guiParams } from "./gui/guiParams";
 import { Kelp } from "./kelp/kelp";
 import { KelpSpecies } from "./kelp/kelpSpecies";
 
-// temp, delete later
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
 // Initialize GUI
@@ -67,7 +65,7 @@ scene.add(seafloor);
 
 // PLACEHOLDER: Kelp Initialization for DEMO
 const kelp = new Kelp(scene, {
-  species: KelpSpecies.GIANT,
+  species: guiParams.species as KelpSpecies,
   height: 12,
 });
 kelp.init();
@@ -87,7 +85,7 @@ function animate() {
   const delta = clock.getDelta();
   controls.update(delta);
 
-  kelp.update();
+  kelp.update(delta);
 
   renderer.render(scene, camera);
 }
