@@ -9,9 +9,9 @@ export class LSystem {
 
   // Constructor for LSystem, which will hold the rules and axiom for generating the kelp structure
   constructor(config: KelpConfig) {
-    this.axiom = config.axiom;
-    this.rules = config.rules;
-    this.iterations = config.iterations;
+    this.axiom = config.growth.axiom;
+    this.rules = config.growth.rules;
+    this.iterations = config.growth.iterations;
   }
 
   // Generate string from config parameters

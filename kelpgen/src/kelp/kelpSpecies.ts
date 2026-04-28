@@ -10,6 +10,11 @@ export const KelpSpecies = {
 
     Generation:
     Use multibranch L-system with denser canopy at top (more iterations, more branches)
+
+    - Splits into main branches near the base/holdfast, like antlers
+    - Main branches are lined with smaller branches with blades and pneumatocysts at the end
+    - Smaller branches off the main branches do not branch at all
+    - smaller branches can alternate left and right or stays on one side
    */
   GIANT: "giant",
 
@@ -20,6 +25,9 @@ export const KelpSpecies = {
 
     Generation:
     Use single chain with terminal node for blades and pneumatocyst
+
+    - Main stipe grows straight up with no branching
+    - At the top, there is a fan of blades with pneumatocyst in the middle
   */
   BULL: "bull",
 
@@ -43,23 +51,63 @@ type KelpMaterialParams = {
   thickness: number;
 };
 
+type Range = {
+  min: number;
+  max: number;
+};
+
+type KelpGrowthConfig = {
+  segmentCount: number;
+  axiom: string;
+  rules: Record<string, string>;
+  iterations: number;
+};
+
+type KelpStructureConfig = {
+  turnAngle: number;
+  symbols: {
+    stipe: string[];
+    frond: string[];
+    bulb: string[];
+    terminal?: Record<
+      string,
+      {
+        bladeCount: number;
+      }
+    >;
+  };
+  holdfast: {
+    minRadius: number;
+    heightFactor: number;
+  };
+  stipe: {
+    baseRadius: number;
+    tipRadius: number;
+  };
+  frond: {
+    bladeLength: Range;
+    bladeWidth: Range;
+    stipeLength: Range;
+    stipeRadius: Range;
+    bulbRadius: Range;
+    directionOffsetAngle?: number;
+    alternateDirection?: boolean;
+  };
+};
+
 // Type for KelpSpecies values
 export type KelpSpecies =
   (typeof KelpSpecies)[keyof typeof KelpSpecies];
 
 // Interface for species-specific parameters
 export interface KelpConfig {
-  // TODO: PLACEHOLDER - adjust to needs later
-  // Generation parameters for the L-system and physical properties of the kelp
-  segmentCount: number;
+  // Physical properties of the kelp
   stiffness: number;
   damping: number;
   buoyancy: number;
 
-  // L-system data/rules
-  axiom: string;
-  rules: Record<string, string>;
-  iterations: number;
+  growth: KelpGrowthConfig;
+  structure: KelpStructureConfig;
 
   // Material parameters for the shader
   bladeMaterial: KelpMaterialParams;
@@ -69,20 +117,48 @@ export interface KelpConfig {
 
 // Species-specific configurations
 export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
-  // TODO: PLACEHOLDER - adjust to needs later
   [KelpSpecies.GIANT]: {
-    segmentCount: 20,
     stiffness: 0.8,
     damping: 0.2,
     buoyancy: 1.0,
 
-    // Multibranch L-system generation
-    // TODO: EDIT, placeholder for demo
-    axiom: "F",
-    rules: {
-      "F": "F[+F]F[-F]F"
+    growth: {
+      // Separate branches with zig zag stipe
+      segmentCount: 20,
+      axiom: "S",
+      rules: {
+        "S": "F L S",
+        "L": "[+B]R",
+        "R": "[-B]L",
+        "B": "PB",
+      },
+      iterations: 10,
     },
-    iterations: 4,
+    structure: {
+      turnAngle: Math.PI / 8,
+      symbols: {
+        stipe: ["F", "S"],
+        frond: ["B"],
+        bulb: ["P"],
+      },
+      holdfast: {
+        minRadius: 0.25,
+        heightFactor: 0.03,
+      },
+      stipe: {
+        baseRadius: 0.09,
+        tipRadius: 0.025,
+      },
+      frond: {
+        bladeLength: { min: 0.3, max: 0.8 },
+        bladeWidth: { min: 0.05, max: 0.15 },
+        stipeLength: { min: 0.06, max: 0.18 },
+        stipeRadius: { min: 0.008, max: 0.014 },
+        bulbRadius: { min: 0.05, max: 0.1 },
+        directionOffsetAngle: Math.PI / 10,
+        alternateDirection: true,
+      },
+    },
 
     // Deep green, thin blades, translucent, small specular highlights
     bladeMaterial: {
@@ -112,17 +188,49 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
 
   },
   [KelpSpecies.BULL]: {
-    segmentCount: 15,
     stiffness: 0.6,
     damping: 0.3,
     buoyancy: 0.8,
 
-    // Single chain with terminal nodes for blades and pneumatocysts
-    axiom: "F",
-    rules: {
-      "F": "F[+F]F[-F]F"
+    growth: {
+      // Single chain with terminal nodes for blades and pneumatocysts
+      // One major stipe ending in pneumatocyst with many blades coming off
+      // Built like a fan, brush, etc.
+      segmentCount: 15,
+      axiom: "F[T]",
+      rules: {
+        "F": "FF",
+      },
+      iterations: 3,
     },
-    iterations: 3,
+    structure: {
+      turnAngle: Math.PI / 8,
+      symbols: {
+        stipe: ["F"],
+        frond: ["B"],
+        bulb: ["P"],
+        terminal: {
+          T: {
+            bladeCount: 6,
+          },
+        },
+      },
+      holdfast: {
+        minRadius: 0.25,
+        heightFactor: 0.03,
+      },
+      stipe: {
+        baseRadius: 0.085,
+        tipRadius: 0.03,
+      },
+      frond: {
+        bladeLength: { min: 0.45, max: 0.9 },
+        bladeWidth: { min: 0.08, max: 0.18 },
+        stipeLength: { min: 0.15, max: 0.35 },
+        stipeRadius: { min: 0.015, max: 0.03 },
+        bulbRadius: { min: 0.08, max: 0.15 },
+      },
+    },
 
     // Olive/brown, smooth rubbery, glossy bulb, translucent blades
     bladeMaterial: {
@@ -151,18 +259,44 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     }
   },
   [KelpSpecies.GOLDEN]: {
-    segmentCount: 25,
     stiffness: 0.9,
     damping: 0.1,
     buoyancy: 1.2,
 
-    // TODO: PLACEHOLDER - adjust to needs later
-    // Multibranch L-system generation with more iterations for denser canopy
-    axiom: "F",
-    rules: {
-      "F": "F[+F]F[-F]F"
+    growth: {
+      // Multibranch L-system generation with more iterations for denser canopy
+      // Similar to giant kelp but with more stipes and denser canopy, thicker blades
+      segmentCount: 25,
+      axiom: "F",
+      rules: {
+        "F": "F[+B]F[-B]F",
+        "B": "B[+B][-B]P",
+      },
+      iterations: 5,
     },
-    iterations: 5,
+    structure: {
+      turnAngle: Math.PI / 7,
+      symbols: {
+        stipe: ["F"],
+        frond: ["B"],
+        bulb: ["P"],
+      },
+      holdfast: {
+        minRadius: 0.3,
+        heightFactor: 0.035,
+      },
+      stipe: {
+        baseRadius: 0.1,
+        tipRadius: 0.03,
+      },
+      frond: {
+        bladeLength: { min: 0.45, max: 0.95 },
+        bladeWidth: { min: 0.08, max: 0.2 },
+        stipeLength: { min: 0.14, max: 0.34 },
+        stipeRadius: { min: 0.015, max: 0.03 },
+        bulbRadius: { min: 0.07, max: 0.14 },
+      },
+    },
 
     // Golden/yellow, waxy, glossy blades with strong subsurface scattering
     bladeMaterial: {
