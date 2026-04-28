@@ -1,11 +1,28 @@
 import * as THREE from "three";
 import { KelpSpecies, KelpSpeciesConfig, type KelpConfig } from "./kelpSpecies";
 import { KelpStructure } from "./kelpStructure";
+import { KelpPhysics } from "../physics/physics";
 
 // Store generation options for a kelp instance
 type KelpOptions = {
   species?: KelpSpecies;
   height?: number;
+};
+
+type FrondBinding = {
+  anchorIndex: number;
+  restDirection: THREE.Vector3;
+  restStemDirection: THREE.Vector3;
+
+  stipeLength: number;
+  stipeRadius: number;
+  bladeLength: number;
+  bladeWidth: number;
+  bulbRadius: number;
+
+  stipeMesh?: THREE.Mesh;
+  bulbMesh?: THREE.Mesh;
+  bladeMesh?: THREE.Mesh;
 };
 
 // Wrapper class for instances of generated kelp
@@ -18,22 +35,23 @@ export class Kelp {
   // Structure data
   private structure: KelpStructure;
 
-  // Three.js
+  // Three.js data
   private group: THREE.Group;
   private scene: THREE.Scene;
+  private stipeMeshes: THREE.Mesh[] = [];
+
+  // Physics data
+  private frondBindings: FrondBinding[] = [];
+  private physics: KelpPhysics;
 
   constructor(scene: THREE.Scene, options: KelpOptions = {}) {
     // Giant is default species
     this.species = options.species ?? KelpSpecies.GIANT;
 
-    // TODO: Implement other species
-    if (this.species !== KelpSpecies.GIANT) {
-      throw new Error("The current demo only supports giant kelp.");
-    }
-
     this.config = KelpSpeciesConfig[this.species];
     this.height = options.height ?? 10;
     this.structure = new KelpStructure(this);
+    this.physics = new KelpPhysics(this.config);
     this.group = new THREE.Group();
     this.scene = scene;
   }
@@ -41,6 +59,7 @@ export class Kelp {
   // Initializes kelp instance for drawing
   init() {
     this.generateStructure();
+    this.initializePhysics();
     this.createMesh();
     this.scene.add(this.group);
   }
@@ -69,9 +88,27 @@ export class Kelp {
     return mesh;
   }
 
+  // Updates the position and orientation of a segment mesh based on new start and end points
+  private updateSegmentMesh(mesh: THREE.Mesh, start: THREE.Vector3, end: THREE.Vector3) {
+    const direction = end.clone().sub(start);
+    const length = direction.length();
+    const midpoint = start.clone().add(end).multiplyScalar(0.5);
+
+    mesh.position.copy(midpoint);
+    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+    mesh.scale.set(1, Math.max(length, 0.001) / (mesh.geometry as THREE.CylinderGeometry).parameters.height, 1);
+  }
+
+  // init physics engine with stipe segments as constraints
+  private initializePhysics() {
+    this.physics.initialize(this.structure.getStipeSegments());
+  }
+
   // create mesh for WebGL
   createMesh() {
     this.group.clear();
+    this.stipeMeshes = [];
+    this.frondBindings = [];
 
     // convert material parameters to Three.js materials
     const stipeMaterial = new THREE.MeshStandardMaterial({
@@ -100,68 +137,117 @@ export class Kelp {
 
     // Create stipe segments
     for (const segment of this.structure.getStipeSegments()) {
-      this.group.add(
-        this.createSegmentMesh(segment.start, segment.end, segment.radius, stipeMaterial),
-      );
+      const mesh = this.createSegmentMesh(segment.start, segment.end, segment.radius, stipeMaterial);
+      this.stipeMeshes.push(mesh);
+      this.group.add(mesh);
     }
 
     // Create fronds ( which include stipe, blade, bulb)
     for (const frond of this.structure.getFronds()) {
       const frondDirection = frond.direction.clone().normalize();
-      const frondTip = frond.origin.clone().add(frondDirection.clone().multiplyScalar(frond.stipeLength));
-      const frondMidpoint = frond.origin.clone().add(frondTip).multiplyScalar(0.5);
+      const anchorIndex = this.physics.getNodes().length > 0
+        ? this.physics.getClosestNodeIndex(frond.origin)
+        : 0;
+      const binding: FrondBinding = {
+        anchorIndex,
+        restDirection: frondDirection.clone(),
+        restStemDirection: this.physics.getStemDirectionAt(anchorIndex, true),
+        stipeLength: frond.stipeLength,
+        stipeRadius: frond.stipeRadius,
+        bladeLength: frond.bladeLength,
+        bladeWidth: frond.bladeWidth,
+        bulbRadius: frond.bulbRadius,
+      };
 
-      // Stipe segment for frond
-      const stipe = this.createSegmentMesh(
-        frond.origin,
-        frondTip,
-        frond.stipeRadius,
-        stipeMaterial,
-      );
-      this.group.add(stipe);
+      if (frond.stipeLength > 0 && frond.stipeRadius > 0) {
+        binding.stipeMesh = this.createSegmentMesh(
+          frond.origin,
+          frond.origin.clone().add(frondDirection.clone().multiplyScalar(frond.stipeLength)),
+          frond.stipeRadius,
+          stipeMaterial,
+        );
+        this.group.add(binding.stipeMesh);
+      }
 
-      // Bulb at tip of frond
-      const bulb = new THREE.Mesh(
-        new THREE.SphereGeometry(frond.bulbRadius, 10, 10),
-        bulbMaterial,
-      );
-      bulb.position.copy(frondTip);
-      bulb.scale.set(1, 1.35, 1);
-      this.group.add(bulb);
+      if (frond.bulbRadius > 0) {
+        binding.bulbMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(frond.bulbRadius, 10, 10),
+          bulbMaterial,
+        );
+        this.group.add(binding.bulbMesh);
+      }
 
-      // Blade as a plane geometry, oriented along the frond direction
-      const blade = new THREE.Mesh(
-        new THREE.PlaneGeometry(frond.bladeWidth, frond.bladeLength, 1, 6),
-        bladeMaterial,
-      );
-      blade.position.copy(
-        frondMidpoint.add(frondDirection.clone().multiplyScalar(frond.bladeLength * 0.2)),
-      );
-      blade.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), frondDirection);
-      blade.rotateZ(Math.PI / 10);
-      this.group.add(blade);
+      if (frond.bladeLength > 0 && frond.bladeWidth > 0) {
+        binding.bladeMesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(frond.bladeWidth, frond.bladeLength, 1, 6),
+          bladeMaterial,
+        );
+        this.group.add(binding.bladeMesh);
+      }
+
+      this.frondBindings.push(binding);
     }
 
     this.group.position.set(0, -1.5, 0);
+    this.refreshFrondMeshes();
   }
 
-  applyForces() {
+  // Update frond meshes based on current physics state
+  private refreshFrondMeshes() {
+    for (const binding of this.frondBindings) {
+      const anchorPosition = this.physics.getNodes()[binding.anchorIndex]?.current ?? new THREE.Vector3();
+      const currentStemDirection = this.physics.getStemDirectionAt(binding.anchorIndex);
+      const restStemDirection = binding.restStemDirection.lengthSq() > 0
+        ? binding.restStemDirection
+        : new THREE.Vector3(0, 1, 0);
+      const frondDirection = binding.restDirection.clone().applyQuaternion(
+        new THREE.Quaternion().setFromUnitVectors(restStemDirection, currentStemDirection),
+      ).normalize();
+      const frondTip = anchorPosition.clone().add(
+        frondDirection.clone().multiplyScalar(binding.stipeLength),
+      );
 
-  }
+      if (binding.stipeMesh) {
+        this.updateSegmentMesh(binding.stipeMesh, anchorPosition, frondTip);
+      }
 
-  // verlet integration
-  verletIntegrate() {
+      if (binding.bulbMesh) {
+        binding.bulbMesh.position.copy(frondTip);
+        binding.bulbMesh.scale.set(1, 1.35, 1);
+      }
 
-  }
-
-  // fix kelp lengths - spring system implementation
-  // Posistion-Based Dynamics/Verlet constraint solving
-  constrain() {
-
+      if (binding.bladeMesh) {
+        const bladeMidpoint = frondTip.clone().add(
+          frondDirection.clone().multiplyScalar(binding.bladeLength * 0.5),
+        );
+        binding.bladeMesh.position.copy(bladeMidpoint);
+        binding.bladeMesh.quaternion.setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          frondDirection,
+        );
+        binding.bladeMesh.rotateZ(Math.PI / 10);
+      }
+    }
   }
 
   // update call for animation
-  update() {
+  update(deltaTime = 1 / 60) {
+    const nodes = this.physics.getNodes();
+    if (nodes.length === 0) {
+      return;
+    }
+
+    this.physics.update(deltaTime);
+
+    for (let i = 0; i < this.stipeMeshes.length; i += 1) {
+      this.updateSegmentMesh(
+        this.stipeMeshes[i],
+        nodes[i].current,
+        nodes[i + 1].current,
+      );
+    }
+
+    this.refreshFrondMeshes();
   }
 
   /* GETTER FUNCTIONS */

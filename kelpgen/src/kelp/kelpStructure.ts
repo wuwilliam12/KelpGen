@@ -199,6 +199,7 @@ export class KelpStructure {
         continue;
       }
 
+      // Check for terminal symbol to create canopy fronds (for bull kelp mostly)
       const terminal = symbols.terminal?.[char];
       if (terminal) {
         const canopyFactor = this.getCanopyFactor(state.position);
@@ -214,28 +215,28 @@ export class KelpStructure {
       }
 
       switch (char) {
-        case "+":
+        case "+": // Rotate direction by turnAngle
           state = {
             position: state.position,
             direction: this.rotateDirection(state.direction, turnAngle),
             lastFrondDirection: state.lastFrondDirection,
           };
           break;
-        case "-":
+        case "-": // Rotate direction by -turnAngle
           state = {
             position: state.position,
             direction: this.rotateDirection(state.direction, -turnAngle),
             lastFrondDirection: state.lastFrondDirection,
           };
           break;
-        case "[":
+        case "[": // Push current state to stack
           stack.push({
             position: state.position.clone(),
             direction: state.direction.clone(),
             lastFrondDirection: state.lastFrondDirection?.clone(),
           });
           break;
-        case "]": {
+        case "]": { // Pop state from stack
           const previous = stack.pop();
           if (previous) {
             state = previous;

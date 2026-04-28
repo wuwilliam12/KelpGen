@@ -6,7 +6,11 @@ export function createGUI() {
 
   // Species selection (disabled for now since only have one species partially implemented)
   const demoFolder = gui.addFolder("Demo");
-  demoFolder.add(guiParams, "species").name("species").disable();
+  demoFolder.add(guiParams, "species").name("species").options({
+    giant: "giant",
+    bull: "bull",
+    golden: "golden",
+  });
 
   // Generation parameters
   const generationFolder = gui.addFolder("Generation");
