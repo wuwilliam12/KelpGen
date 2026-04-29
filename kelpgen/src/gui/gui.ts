@@ -6,7 +6,7 @@ export function createGUI() {
 
   // Species selection (disabled for now since only have one species partially implemented)
   const demoFolder = gui.addFolder("Demo");
-  demoFolder.add(guiParams, "species").name("species").options({
+  const speciesController = demoFolder.add(guiParams, "species").name("species").options({
     giant: "giant",
     bull: "bull",
     golden: "golden",
@@ -22,5 +22,5 @@ export function createGUI() {
   physicsFolder.add(guiParams, "stiffness", 0, 1, 0.1);
   physicsFolder.add(guiParams, "damping", 0, 1, 0.1);
 
-  return gui;
+  return { gui, speciesController };
 }

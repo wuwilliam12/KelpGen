@@ -105,6 +105,7 @@ export interface KelpConfig {
   stiffness: number;
   damping: number;
   buoyancy: number;
+  waveStrength: number;
 
   growth: KelpGrowthConfig;
   structure: KelpStructureConfig;
@@ -121,6 +122,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     stiffness: 0.8,
     damping: 0.2,
     buoyancy: 1.0,
+    waveStrength: 1.0,
 
     growth: {
       // Single main stipe with lateral branches for more realistic giant kelp structure
@@ -189,6 +191,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     stiffness: 0.6,
     damping: 0.3,
     buoyancy: 0.8,
+    waveStrength: 1.0,
 
     growth: {
       // Single chain with terminal nodes for blades and pneumatocysts
@@ -260,6 +263,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     stiffness: 0.9,
     damping: 0.1,
     buoyancy: 1.2,
+    waveStrength: 1.0,
 
     growth: {
       // Multibranch L-system generation with more iterations for denser canopy

@@ -196,7 +196,7 @@ export class KelpPhysics {
         Math.sin(this.simulationTime * 1.2 + heightFactor * 2.4) * 0.05,
         0,
         Math.cos(this.simulationTime * 0.9 + heightFactor * 1.7) * 0.035,
-      ).multiplyScalar(0.25 + heightFactor * 0.25);
+      ).multiplyScalar((0.25 + heightFactor * 0.25) * this.config.waveStrength);
 
       node.previous.copy(node.current);
       node.current.add(velocity).add(sway.multiplyScalar(dt));
@@ -220,7 +220,7 @@ export class KelpPhysics {
           Math.sin(this.simulationTime * 1.4 * speed + chainFactor * 3.2 + phaseOffset) * 0.08,
           Math.sin(this.simulationTime * 0.7 * speed + chainFactor * 1.7 + phaseOffset * 0.4) * 0.025,
           Math.cos(this.simulationTime * 1.05 * speed + chainFactor * 2.8 + phaseOffset * 0.9) * 0.065,
-        ).multiplyScalar((0.28 + chainFactor * 0.42) * amplitude * branchBias);
+        ).multiplyScalar((0.28 + chainFactor * 0.42) * amplitude * branchBias * this.config.waveStrength);
 
         node.previous.copy(node.current);
         node.current.add(velocity).add(sway.multiplyScalar(dt));

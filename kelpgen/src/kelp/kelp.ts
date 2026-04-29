@@ -65,6 +65,45 @@ export class Kelp {
     this.scene.add(this.group);
   }
 
+  // Regenerates kelp with new parameters
+  regenerate(options: Partial<KelpOptions & { config?: Partial<KelpConfig> }> = {}) {
+    // Update species if provided
+    if (options.species) {
+      this.species = options.species;
+    }
+
+    // Update height if provided
+    if (options.height !== undefined) {
+      this.height = options.height;
+    }
+
+    // Update config with provided overrides
+    if (options.config) {
+      const baseConfig = KelpSpeciesConfig[this.species];
+      this.config = {
+        ...baseConfig,
+        ...options.config,
+        growth: { ...baseConfig.growth, ...options.config.growth },
+        structure: { ...baseConfig.structure, ...options.config.structure },
+      };
+    } else {
+      this.config = KelpSpeciesConfig[this.species];
+    }
+
+    // Clear existing meshes and data
+    this.group.clear();
+    this.stipeMeshes = [];
+    this.frondBindings = [];
+
+    // Regenerate with new parameters
+    this.structure = new KelpStructure(this);
+    this.physics = new KelpPhysics(this.config);
+
+    this.generateStructure();
+    this.initializePhysics();
+    this.createMesh();
+  }
+
   // Generation handler (calls L-system generator)
   generateStructure() {
     this.structure.generate();

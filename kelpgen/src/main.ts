@@ -3,12 +3,12 @@ import * as THREE from "three";
 import { createGUI } from "./gui/gui";
 import { guiParams } from "./gui/guiParams";
 import { Kelp } from "./kelp/kelp";
-import { KelpSpecies } from "./kelp/kelpSpecies";
+import { KelpSpecies, KelpSpeciesConfig } from "./kelp/kelpSpecies";
 
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
 // Initialize GUI
-createGUI();
+const { gui, speciesController } = createGUI();
 
 // Scene + Camera Setup
 const scene = new THREE.Scene();
@@ -69,6 +69,47 @@ const kelp = new Kelp(scene, {
   height: 12,
 });
 kelp.init();
+
+// Connect GUI parameters to kelp regeneration
+function updateKelpFromGUI() {
+  const baseConfig = KelpSpeciesConfig[guiParams.species as KelpSpecies];
+  kelp.regenerate({
+    species: guiParams.species as KelpSpecies,
+    config: {
+      stiffness: guiParams.stiffness,
+      damping: guiParams.damping,
+      waveStrength: guiParams.waveStrength,
+      growth: {
+        ...baseConfig.growth,
+        segmentCount: guiParams.segments,
+      }
+    }
+  });
+}
+
+// Set up GUI change listeners
+gui.controllers.forEach(controller => {
+  controller.onChange(() => {
+    updateKelpFromGUI();
+  });
+});
+
+// Also specifically listen to species changes
+speciesController.onChange(() => {
+  // Update guiParams with new species defaults
+  const newSpeciesConfig = KelpSpeciesConfig[guiParams.species as KelpSpecies];
+  guiParams.stiffness = newSpeciesConfig.stiffness;
+  guiParams.damping = newSpeciesConfig.damping;
+  guiParams.waveStrength = newSpeciesConfig.waveStrength;
+  guiParams.segments = newSpeciesConfig.growth.segmentCount;
+
+  // Update GUI controllers to reflect new values
+  gui.controllers.forEach(controller => {
+    controller.updateDisplay();
+  });
+
+  updateKelpFromGUI();
+});
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
