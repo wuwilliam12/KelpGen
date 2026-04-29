@@ -123,21 +123,19 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     buoyancy: 1.0,
 
     growth: {
-      // Separate branches with zig zag stipe
-      segmentCount: 20,
-      axiom: "S",
+      // Single main stipe with lateral branches for more realistic giant kelp structure
+      segmentCount: 25,
+      axiom: "F",
       rules: {
-        "S": "F L S",
-        "L": "[+B]R",
-        "R": "[-B]L",
+        "F": "F[+B][-B]F",
         "B": "PB",
       },
-      iterations: 10,
+      iterations: 6,
     },
     structure: {
-      turnAngle: Math.PI / 8,
+      turnAngle: Math.PI / 6, // Smaller angle for more horizontal lateral branches
       symbols: {
-        stipe: ["F", "S"],
+        stipe: ["F"],
         frond: ["B"],
         bulb: ["P"],
       },
