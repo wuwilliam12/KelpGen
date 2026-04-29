@@ -1,7 +1,8 @@
+# Kelp Forest README
 
+**Author:** William Wu
 
-Implementation:
-
+(All library/build script items handled in Makefile rule)
 
 References:
 * https://matthias-research.github.io/pages/publications/posBasedDyn.pdf
