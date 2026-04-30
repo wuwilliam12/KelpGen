@@ -151,11 +151,11 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         tipRadius: 0.025,
       },
       frond: {
-        bladeLength: { min: 0.3, max: 0.8 },
-        bladeWidth: { min: 0.05, max: 0.15 },
-        stipeLength: { min: 0.06, max: 0.18 },
+        bladeLength: { min: 0.8, max: 1.25 },
+        bladeWidth: { min: 0.1, max: 0.2 },
+        stipeLength: { min: 0.08, max: 0.2 },
         stipeRadius: { min: 0.008, max: 0.014 },
-        bulbRadius: { min: 0.05, max: 0.1 },
+        bulbRadius: { min: 0.03, max: 0.055 },
         directionOffsetAngle: Math.PI / 10,
         alternateDirection: true,
       },
@@ -213,7 +213,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         bulb: ["P"],
         terminal: {
           T: {
-            bladeCount: 14,
+            bladeCount: 40,
             sharedBulb: true,
           },
         },
@@ -227,11 +227,11 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         tipRadius: 0.03,
       },
       frond: {
-        bladeLength: { min: 1.8, max: 3.2 },
-        bladeWidth: { min: 0.18, max: 0.4 },
+        bladeLength: { min: 3.0, max: 4.0 },
+        bladeWidth: { min: 0.13, max: 0.17 },
         stipeLength: { min: 0.02, max: 0.06 },
         stipeRadius: { min: 0.015, max: 0.03 },
-        bulbRadius: { min: 0.24, max: 0.42 },
+        bulbRadius: { min: 0.05, max: 0.075 },
       },
     },
 
