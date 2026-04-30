@@ -272,7 +272,10 @@ export class Kelp {
           frondDirection,
           frond.bladeLength * 1.5,
           12,
-          Math.max(0.02, frond.bladeWidth * 0.3),
+          {
+            collisionRadius: Math.max(0.02, frond.bladeWidth * 0.3),
+            buoyancy: frond.bulbRadius > 0 ? this.config.buoyancy * frond.bulbRadius * 0.12 : 0,
+          },
         );
       }
 
