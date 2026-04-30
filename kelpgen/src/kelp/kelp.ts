@@ -2,6 +2,10 @@ import * as THREE from "three";
 import { KelpSpecies, KelpSpeciesConfig, type KelpConfig } from "./kelpSpecies";
 import { KelpStructure } from "./kelpStructure";
 import { KelpPhysics } from "../physics/physics";
+import {
+  createKelpShaderMaterial,
+  updateKelpShaderMaterial,
+} from "../rendering/shaders/kelpShader";
 
 // Store generation options for a kelp instance
 type KelpOptions = {
@@ -40,6 +44,7 @@ export class Kelp {
   private group: THREE.Group;
   private scene: THREE.Scene;
   private stipeMeshes: THREE.Mesh[] = [];
+  private kelpMaterials: THREE.Material[] = [];
 
   // Physics data
   private frondBindings: FrondBinding[] = [];
@@ -94,6 +99,7 @@ export class Kelp {
     this.group.clear();
     this.stipeMeshes = [];
     this.frondBindings = [];
+    this.kelpMaterials = [];
 
     // Regenerate with new parameters
     this.structure = new KelpStructure(this);
@@ -193,24 +199,15 @@ export class Kelp {
     this.group.clear();
     this.stipeMeshes = [];
     this.frondBindings = [];
+    this.kelpMaterials = [];
 
     // convert material parameters to Three.js materials
-    const stipeMaterial = new THREE.MeshStandardMaterial({
-      color: this.config.stipeMaterial.color,
-      roughness: this.config.stipeMaterial.roughness,
-      metalness: 0,
-    });
-    const bladeMaterial = new THREE.MeshStandardMaterial({
-      color: this.config.bladeMaterial.color,
-      roughness: this.config.bladeMaterial.roughness,
-      metalness: 0,
+    const stipeMaterial = createKelpShaderMaterial(this.config.stipeMaterial, "stipe");
+    const bladeMaterial = createKelpShaderMaterial(this.config.bladeMaterial, "blade", {
       side: THREE.DoubleSide,
     });
-    const bulbMaterial = new THREE.MeshStandardMaterial({
-      color: this.config.bulbMaterial.color,
-      roughness: this.config.bulbMaterial.roughness,
-      metalness: 0,
-    });
+    const bulbMaterial = createKelpShaderMaterial(this.config.bulbMaterial, "bulb");
+    this.kelpMaterials.push(stipeMaterial, bladeMaterial, bulbMaterial);
 
     // Create holdfast at base of kelp
     const holdfastGeometry = new THREE.SphereGeometry(this.structure.getHoldfastRadius(), 10, 10);
@@ -283,7 +280,16 @@ export class Kelp {
     }
 
     this.group.position.set(0, -1.5, 0);
+    this.updateShaderState();
     this.refreshFrondMeshes();
+  }
+
+  private updateShaderState() {
+    const simulationTime = this.physics.getSimulationTime();
+
+    for (const material of this.kelpMaterials) {
+      updateKelpShaderMaterial(material, simulationTime);
+    }
   }
 
   // Update frond meshes based on current physics state
@@ -375,6 +381,7 @@ export class Kelp {
     }
 
     this.physics.update(deltaTime);
+    this.updateShaderState();
 
     for (let i = 0; i < this.stipeMeshes.length; i += 1) {
       this.updateSegmentMesh(

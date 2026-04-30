@@ -42,7 +42,7 @@ export const KelpSpecies = {
 } as const;
 
 // Material parameters for the kelp shader
-type KelpMaterialParams = {
+export type KelpMaterialParams = {
   color: THREE.Color;
   subsurfaceStrength: number;
   translucency: number;
@@ -327,4 +327,3 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
     }
   },
 };
-

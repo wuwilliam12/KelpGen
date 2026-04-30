@@ -4,6 +4,11 @@ import { createGUI } from "./gui/gui";
 import { guiParams } from "./gui/guiParams";
 import { Kelp } from "./kelp/kelp";
 import { KelpSpecies, KelpSpeciesConfig } from "./kelp/kelpSpecies";
+import {
+  createOceanBackdrop,
+  createSeafloorMesh,
+  updateOceanShader,
+} from "./rendering/shaders/oceanShader";
 
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
@@ -50,17 +55,11 @@ const fillLight = new THREE.DirectionalLight(0x7bcf8d, 0.7);
 fillLight.position.set(-5, 4, -3);
 scene.add(fillLight);
 
+const oceanBackdrop = createOceanBackdrop();
+scene.add(oceanBackdrop);
+
 // Seafloor
-const seafloor = new THREE.Mesh(
-  new THREE.CircleGeometry(14, 48),
-  new THREE.MeshStandardMaterial({
-    color: 0x102c24,
-    roughness: 1,
-    metalness: 0,
-  }),
-);
-seafloor.rotation.x = -Math.PI / 2;
-seafloor.position.y = -1.55;
+const seafloor = createSeafloorMesh();
 scene.add(seafloor);
 
 // PLACEHOLDER: Kelp Initialization for DEMO
@@ -124,9 +123,12 @@ function animate() {
   requestAnimationFrame(animate);
 
   const delta = clock.getDelta();
+  const elapsedTime = clock.getElapsedTime();
   controls.update(delta);
 
   kelp.update(delta);
+  updateOceanShader(oceanBackdrop, elapsedTime);
+  updateOceanShader(seafloor, elapsedTime);
 
   renderer.render(scene, camera);
 }
