@@ -10,6 +10,7 @@ import {
   updateOceanShader,
 } from "./rendering/shaders/oceanShader";
 
+// TEMP REMOVE LATER
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
 // Initialize GUI
@@ -69,6 +70,7 @@ const kelp = new Kelp(scene, {
 });
 kelp.init();
 
+// Syncs default species values to GUI on load
 function syncGUIParamsToSpecies(species: KelpSpecies) {
   const config = KelpSpeciesConfig[species];
   guiParams.stiffness = config.stiffness;
@@ -127,13 +129,16 @@ window.addEventListener("resize", () => {
 //temp for demo
 const clock = new THREE.Clock();
 
+// Main animation loop
 function animate() {
   requestAnimationFrame(animate);
 
+  // Update controls with delta time for smooth movement
   const delta = clock.getDelta();
   const elapsedTime = clock.getElapsedTime();
   controls.update(delta);
 
+  // updates scene
   kelp.update(delta);
   updateOceanShader(oceanBackdrop, elapsedTime);
   updateOceanShader(seafloor, elapsedTime);

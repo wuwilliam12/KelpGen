@@ -79,6 +79,7 @@ export class KelpStructure {
     });
   }
 
+  // Generates a frond (blade + optional bulb) based on the provided shape parameters
   private createFrondShape(origin: THREE.Vector3, direction: THREE.Vector3, shape: FrondShape) {
     this.fronds.push({
       origin: origin.clone(),
@@ -91,6 +92,7 @@ export class KelpStructure {
     });
   }
 
+  // Attaches bulb only if same origin and direction frond already exists, otherwise creates a new frond with just a bulb.
   private tryAttachBulbToExistingFrond(
     origin: THREE.Vector3,
     direction: THREE.Vector3,
@@ -116,6 +118,7 @@ export class KelpStructure {
     return false;
   }
 
+  // Generates the frond shape parameters based on its position in the canopy to create more natural variation
   private getFrondShape(canopyFactor: number, includeBlade = true, includeBulb = true): FrondShape {
     const { frond } = this.getConfig().structure;
     return {
@@ -129,10 +132,13 @@ export class KelpStructure {
     };
   }
 
+  // Helper for "+" and "-" symbols in L-system interpretation
+  // Rotates a direction vector by a given angle around the Z axis
   private rotateDirection(direction: THREE.Vector3, angle: number) {
     return direction.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), angle).normalize();
   }
 
+  // Interprets generated L-system string using turtle graphics
   private interpretLSystemString() {
     const config = this.getConfig();
     const segmentLength = this.kelp.getHeight() / config.growth.segmentCount;
@@ -269,7 +275,6 @@ export class KelpStructure {
   }
 
   /* GETTER FUNCTIONS */
-
   getStipeSegments() {
     return this.stipeSegments;
   }

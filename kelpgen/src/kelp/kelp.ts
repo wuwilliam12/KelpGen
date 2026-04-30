@@ -398,7 +398,6 @@ export class Kelp {
   }
 
   /* GETTER FUNCTIONS */
-
   getConfig() {
     return this.config;
   }
