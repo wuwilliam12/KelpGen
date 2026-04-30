@@ -5,7 +5,7 @@ export function createGUI() {
   const gui = new GUI();
   const controllers: Controller[] = [];
 
-  // Species selection (disabled for now since only have one species partially implemented)
+  // Species selection
   const demoFolder = gui.addFolder("Demo");
   const speciesController = demoFolder.add(guiParams, "species").name("species").options({
     giant: "giant",

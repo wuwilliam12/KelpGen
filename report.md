@@ -44,6 +44,7 @@ Still incomplete from the original proposal:
   procedural generation, L-system logic, structure interpretation, physics simulation, and GUI controls
 - Species configuration data for:
   Giant Kelp, Bull Kelp, and Golden Kelp
+- Kelp generation and simulation mimicing real world kelp behavior and structure in ocean
 
 Visual Examples:
 - Giant Kelp:
