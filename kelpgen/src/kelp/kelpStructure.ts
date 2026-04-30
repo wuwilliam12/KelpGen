@@ -203,13 +203,22 @@ export class KelpStructure {
       const terminal = symbols.terminal?.[char];
       if (terminal) {
         const canopyFactor = this.getCanopyFactor(state.position);
-        const frondShape = this.getFrondShape(canopyFactor);
+        const frondShape = this.getFrondShape(canopyFactor, true, !terminal.sharedBulb);
         const angleStep = (Math.PI * 2) / terminal.bladeCount;
+        let bladeOrigin = state.position.clone();
+
+        if (terminal.sharedBulb) {
+          const bulbShape = this.getFrondShape(canopyFactor, false, true);
+          this.createFrondShape(state.position, state.direction, bulbShape);
+          bladeOrigin = state.position.clone().add(
+            state.direction.clone().multiplyScalar(bulbShape.bulbRadius * 1.35),
+          );
+        }
 
         for (let i = 0; i < terminal.bladeCount; i += 1) {
           const angle = i * angleStep;
           const bladeDirection = new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle));
-          this.createFrondShape(state.position, bladeDirection, frondShape);
+          this.createFrondShape(bladeOrigin, bladeDirection, frondShape);
         }
         continue;
       }

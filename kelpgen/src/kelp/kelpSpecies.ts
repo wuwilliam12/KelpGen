@@ -73,6 +73,7 @@ type KelpStructureConfig = {
       string,
       {
         bladeCount: number;
+        sharedBulb?: boolean;
       }
     >;
   };
@@ -212,7 +213,8 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         bulb: ["P"],
         terminal: {
           T: {
-            bladeCount: 6,
+            bladeCount: 14,
+            sharedBulb: true,
           },
         },
       },
@@ -225,11 +227,11 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         tipRadius: 0.03,
       },
       frond: {
-        bladeLength: { min: 0.45, max: 0.9 },
-        bladeWidth: { min: 0.08, max: 0.18 },
-        stipeLength: { min: 0.15, max: 0.35 },
+        bladeLength: { min: 1.8, max: 3.2 },
+        bladeWidth: { min: 0.18, max: 0.4 },
+        stipeLength: { min: 0.02, max: 0.06 },
         stipeRadius: { min: 0.015, max: 0.03 },
-        bulbRadius: { min: 0.08, max: 0.15 },
+        bulbRadius: { min: 0.24, max: 0.42 },
       },
     },
 
@@ -240,7 +242,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
       translucency: 0.85,
       roughness: 0.25,
       specular: 0.3,
-      thickness: 0.08
+      thickness: 0.14
     },
     stipeMaterial: {
       color: new THREE.Color(0x5A4A3A),
@@ -272,7 +274,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
       axiom: "F",
       rules: {
         "F": "F[+B]F[-B]F",
-        "B": "B[+B][-B]P",
+        "B": "B[+B][-B]",
       },
       iterations: 5,
     },
@@ -281,7 +283,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
       symbols: {
         stipe: ["F"],
         frond: ["B"],
-        bulb: ["P"],
+        bulb: [],
       },
       holdfast: {
         minRadius: 0.3,
@@ -296,7 +298,7 @@ export const KelpSpeciesConfig: Record<KelpSpecies, KelpConfig> = {
         bladeWidth: { min: 0.08, max: 0.2 },
         stipeLength: { min: 0.14, max: 0.34 },
         stipeRadius: { min: 0.015, max: 0.03 },
-        bulbRadius: { min: 0.07, max: 0.14 },
+        bulbRadius: { min: 0, max: 0 },
       },
     },
 
