@@ -13,7 +13,7 @@ import {
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls.js';
 
 // Initialize GUI
-const { gui, speciesController } = createGUI();
+const { speciesController, controllers } = createGUI();
 
 // Scene + Camera Setup
 const scene = new THREE.Scene();
@@ -65,18 +65,31 @@ scene.add(seafloor);
 // PLACEHOLDER: Kelp Initialization for DEMO
 const kelp = new Kelp(scene, {
   species: guiParams.species as KelpSpecies,
-  height: 12,
+  height: guiParams.height,
 });
 kelp.init();
+
+function syncGUIParamsToSpecies(species: KelpSpecies) {
+  const config = KelpSpeciesConfig[species];
+  guiParams.stiffness = config.stiffness;
+  guiParams.damping = config.damping;
+  guiParams.buoyancy = config.buoyancy;
+  guiParams.waveStrength = config.waveStrength;
+  guiParams.segments = config.growth.segmentCount;
+}
+
+syncGUIParamsToSpecies(guiParams.species as KelpSpecies);
 
 // Connect GUI parameters to kelp regeneration
 function updateKelpFromGUI() {
   const baseConfig = KelpSpeciesConfig[guiParams.species as KelpSpecies];
   kelp.regenerate({
     species: guiParams.species as KelpSpecies,
+    height: guiParams.height,
     config: {
       stiffness: guiParams.stiffness,
       damping: guiParams.damping,
+      buoyancy: guiParams.buoyancy,
       waveStrength: guiParams.waveStrength,
       growth: {
         ...baseConfig.growth,
@@ -87,7 +100,7 @@ function updateKelpFromGUI() {
 }
 
 // Set up GUI change listeners
-gui.controllers.forEach(controller => {
+controllers.forEach((controller) => {
   controller.onChange(() => {
     updateKelpFromGUI();
   });
@@ -95,15 +108,10 @@ gui.controllers.forEach(controller => {
 
 // Also specifically listen to species changes
 speciesController.onChange(() => {
-  // Update guiParams with new species defaults
-  const newSpeciesConfig = KelpSpeciesConfig[guiParams.species as KelpSpecies];
-  guiParams.stiffness = newSpeciesConfig.stiffness;
-  guiParams.damping = newSpeciesConfig.damping;
-  guiParams.waveStrength = newSpeciesConfig.waveStrength;
-  guiParams.segments = newSpeciesConfig.growth.segmentCount;
+  syncGUIParamsToSpecies(guiParams.species as KelpSpecies);
 
   // Update GUI controllers to reflect new values
-  gui.controllers.forEach(controller => {
+  controllers.forEach((controller) => {
     controller.updateDisplay();
   });
 

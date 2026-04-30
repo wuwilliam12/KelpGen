@@ -5,12 +5,13 @@ export const guiParams = {
   species: "giant",
 
   // Generation
+  height: 12,
   segments: 20,
-  branchChance: 0.2,
 
   // Physics
   stiffness: 0.8,
-  damping: 0.1,
+  damping: 0.2,
+  buoyancy: 1.0,
 
   // Environment
   waveStrength: 1.0,
